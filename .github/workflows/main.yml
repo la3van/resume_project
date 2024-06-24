@@ -1,0 +1,52 @@
+name: LaTeX Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ResumeTex/main.tex' 
+  workflow_dispatch:
+  
+jobs:
+
+  build_latex:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+        
+      - name: Create Docker volume
+        run: docker volume create KOMARIK
+        
+      - name: Build Docker image
+        run: docker build -t latex .
+        
+      - name: Run Docker container
+        run: docker run -v KOMARIK:/KOMARIK -it --rm  --name my_cv_latex_komar latex:latest
+
+      - name: Wait for container to finish
+        run: docker wait my_cv_latex_komar
+        
+      - name: Copy PDF to repository
+        run: docker cp my_cv_latex_komar:/KOMARIK/ResumeTex/. .
+
+      - name: Commit changes
+        env:
+              PERSONAL_TOKEN: ${{ secrets.KOMAR_SECRET }}  
+        run: |
+          git config --global user.email "ivanlatysev2896@gmail.com"
+          git config --global user.name "la3van"
+          git remote set-url origin https://${PERSONAL_TOKEN}@github.com/la3van/resume_project
+          cd ResumeTex
+          git add .
+
+          git commit -m "Update PDF"
+          git push -f origin main
