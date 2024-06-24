@@ -1,0 +1,33 @@
+name: Publish Resume Instagramm
+
+on:
+  push:
+    branches:
+      - main 
+    paths:
+      - 'ResumeTex/main.pdf' 
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Branch-for-publishing branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
+      - name: Copy PDF to resume branch
+        env:
+          PERSONAL_TOKEN: ${{ secrets.KOMAR_SECRET }}
+        run: |
+          git config --global user.email "ivanlatysev2896@gmail.com"
+          git config --global user.name "la3van"
+          git checkout Branch-for-publishing
+          git show main:ResumeTex/main.pdf > resume.pdf
+          git add resume.pdf
+          git commit -m "Updated resume.pdf"
+          git push origin Branch-for-publishing
