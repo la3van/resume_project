@@ -36,7 +36,7 @@ jobs:
         run: docker wait my_cv_latex_komar
         
       - name: Copy PDF to repository
-        run: docker cp my_cv_latex_komar:/KOMARIK/ResumeTex/. .
+        run: docker cp my_cv_latex_komar:/KOMARIK/ResumeTex/. ResumeTex
 
       - name: Commit changes
         env:
