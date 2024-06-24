@@ -30,7 +30,7 @@ jobs:
         run: docker build -t latex .
         
       - name: Run Docker container
-        run: docker run -v KOMARIK:/KOMARIK -it --rm  --name my_cv_latex_komar latex:latest
+        run: docker run -v KOMARIK:/KOMARIK --name my_cv_latex_komar latex:latest
 
       - name: Wait for container to finish
         run: docker wait my_cv_latex_komar
